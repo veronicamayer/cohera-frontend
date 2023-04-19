@@ -1,0 +1,31 @@
+@font-face {
+    font-family: "Moderne Sans";
+    src: url(../../assets/fonts/ModerneSansFont.ttf);
+}
+
+#brandMenu {
+    display: none;
+    flex-direction: column;
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 2;
+    background-color: white;
+    padding: 10vh 10vw 0 5vw;
+    height: 100vh;
+
+    i {
+        margin-bottom: 5vh;
+    }
+
+    a {
+        color: black;
+        text-decoration: none;
+        font-family: "Moderne Sans";
+        margin-bottom: 2vh;
+    }
+}
+
+#brandMenu.visible {
+    display: flex;
+}
