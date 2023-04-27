@@ -1,13 +1,12 @@
-@font-face {
-    font-family: Space Mono;
-    src: url(../../assets/fonts/SpaceMono-Regular.ttf);
-}
-
 header {
     display: flex;
     align-items: baseline;
     justify-content: space-between;
-    padding: 10vh 2vw 10vh 2vw;
+    padding: 3vh 3vw 0 3vw;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
 
     p {
         position: absolute;
@@ -24,14 +23,21 @@ header {
 
     div {
         display: flex;
-        gap: 5vw;
+        gap: 3vw;
+        align-items: baseline;
     }
 
     img {
         width: 10vw;
         object-fit: contain;
         position: absolute;
-        top: 7.5vh;
+        top: 2.5vh;
         left: 45vw;
+    }
+
+    a {
+        color: black;
+        margin: 0;
+        padding: 0;
     }
 }

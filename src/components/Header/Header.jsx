@@ -1,11 +1,12 @@
 import "./Header.scss";
-
+import { Link } from "react-router-dom";
 import Logo from "../../assets/img/Logo.png";
 
 const Header = () => {
     return (
         <header>
-            <p>Being naked is the #1 most sustianable option. We're #2.</p>
+            {/*             <p>Being naked is the #1 most sustianable option. We're #2.</p>
+             */}{" "}
             <button
                 onClick={() => {
                     console.log("click");
@@ -18,10 +19,14 @@ const Header = () => {
             >
                 <i className="fa-solid fa-bars"></i>
             </button>
-            <img src={Logo} alt="Cohera Logo" />
+            <Link to="/">
+                <img src={Logo} alt="Cohera Logo" />
+            </Link>
             <div>
                 <i className="fa-solid fa-magnifying-glass"></i>
-                <i className="fa-regular fa-heart"></i>
+                <Link to="/dashboard">
+                    <i className="fa-regular fa-heart"></i>
+                </Link>
             </div>
         </header>
     );

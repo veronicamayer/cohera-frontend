@@ -7,47 +7,43 @@ import Header from "../../components/Header/Header";
 import BrandMenu from "../../components/BrandMenu/BrandMenu";
 import Banner from "../../assets/img/Banner.png";
 
-const Home = () => {
+const Home = (loggedInUser) => {
     const [articles, setArticles] = useState([]);
 
-    function shuffle(array) {
-        let currentIndex = array.length;
-        let temporaryValue, randomIndex;
-
-        while (currentIndex !== 0) {
-            randomIndex = Math.floor(Math.random() * currentIndex);
-            currentIndex -= 1;
-            temporaryValue = array[currentIndex];
-            array[currentIndex] = array[randomIndex];
-            array[randomIndex] = temporaryValue;
-        }
-
-        return array;
-    }
-
     useEffect(() => {
-        const options = {
-            method: "GET",
-            url: "https://fashion-api1.p.rapidapi.com/allshops",
-            headers: {
-                "X-RapidAPI-Key":
-                    "19b378c85fmshb943337f79f2f6cp1141e7jsnfa3ce943fc17",
-                "X-RapidAPI-Host": "fashion-api1.p.rapidapi.com",
-            },
-        };
-
         axios
-            .request(options)
+            .get("http://localhost:4545/api/allshops")
             .then(function (response) {
-                console.log(response.data);
-                setArticles(shuffle(response.data)); // shuffle the response data and set the state
+                setArticles(response.data);
             })
             .catch(function (error) {
                 console.error(error);
             });
     }, []);
 
-    console.log(articles);
+    function handleHeartClick(article) {
+        console.log(loggedInUser.loggedInUser + ": " + article);
+        fetch(`http://localhost:4545/users/${loggedInUser.loggedInUser}`, {
+            method: "PUT",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ favorite: article }),
+        })
+            .then((response) => {
+                if (response.ok) {
+                    console.log("Document updated successfully");
+                } else {
+                    console.log(
+                        "Error updating document:",
+                        response.statusText
+                    );
+                }
+            })
+            .catch((error) => {
+                console.log("Error updating document:", error);
+            });
+    }
 
     return (
         <main>
@@ -58,22 +54,34 @@ const Home = () => {
                 <a href="">Pullover</a>
                 <a href="">Hosen</a>
                 <a href="">Shorts</a>
-                <a href="">Waesche</a>
+                {/*                 <a href="">Waesche</a>
                 <a href="">Badekleidung</a>
+ */}{" "}
                 <a href="">Schuhe</a>
                 <a href="">Accessoires</a>
             </section>
-            <img src={Banner} alt="" id="banner" />
+            {/*             <img src={Banner} alt="" id="banner" />
+             */}{" "}
             <li id="counter">{`all items (${articles.length})`}</li>
             <section id="allArticles">
-                {articles.map((article) => (
-                    <Link to={`/details/${article.shopName}/${article.index}`}>
-                        <img src={article.imageUrl} alt="" />
-                        <div>
-                            <p>{article.title}</p>
-                            <p>{article.price}</p>
-                        </div>
-                    </Link>
+                {articles.map((article, i) => (
+                    <article key={i}>
+                        <i
+                            className={`fa-regular fa-heart ${
+                                article.liked ? "liked" : ""
+                            }`}
+                            onClick={() => handleHeartClick(article.index)}
+                        ></i>
+                        <Link
+                            to={`/details/${article.shopName}/${article.index}`}
+                        >
+                            <img src={article.imageUrl} alt="" />
+                            <div>
+                                <p>{article.title}</p>
+                                <p>{article.price}</p>
+                            </div>
+                        </Link>
+                    </article>
                 ))}
             </section>
         </main>
