@@ -7,23 +7,10 @@ import Header from "../../components/Header/Header";
 import BrandMenu from "../../components/BrandMenu/BrandMenu";
 import Banner from "../../assets/img/Banner.png";
 
-const Home = (loggedInUser) => {
-    const [articles, setArticles] = useState([]);
-
-    useEffect(() => {
-        axios
-            .get("http://localhost:4545/api/allshops")
-            .then(function (response) {
-                setArticles(response.data);
-            })
-            .catch(function (error) {
-                console.error(error);
-            });
-    }, []);
-
+const Home = ({ loggedInUser, favorites, articles }) => {
     function handleHeartClick(article) {
-        console.log(loggedInUser.loggedInUser + ": " + article);
-        fetch(`http://localhost:4545/users/${loggedInUser.loggedInUser}`, {
+        console.log(loggedInUser + ": " + article);
+        fetch(`http://localhost:4545/users/${loggedInUser}`, {
             method: "PUT",
             headers: {
                 "Content-Type": "application/json",
@@ -67,14 +54,14 @@ const Home = (loggedInUser) => {
                 {articles.map((article, i) => (
                     <article key={i}>
                         <i
-                            className={`fa-regular fa-heart ${
-                                article.liked ? "liked" : ""
+                            className={`fa-heart ${
+                                favorites.includes(i)
+                                    ? "fa-solid"
+                                    : "fa-regular"
                             }`}
-                            onClick={() => handleHeartClick(article.index)}
+                            onClick={() => handleHeartClick(article.id)}
                         ></i>
-                        <Link
-                            to={`/details/${article.shopName}/${article.index}`}
-                        >
+                        <Link to={`/details/${article.shopName}/${article.id}`}>
                             <img src={article.imageUrl} alt="" />
                             <div>
                                 <p>{article.title}</p>

@@ -14,41 +14,53 @@ import Dashboard from "./pages/Dashboard/Dashboard";
 function App() {
     const [loggedInUser, setloggedInUser] = useState("");
     const [favorites, setFavorites] = useState([]);
+    const [articles, setArticles] = useState([]);
+
+    const fetchData = async () => {
+        try {
+            const response = await axios.get(`http://localhost:4545/favorites`);
+            return response.data;
+        } catch (error) {
+            console.error(error);
+        }
+    };
 
     useEffect(() => {
         setloggedInUser(
             JSON.parse(window.localStorage.getItem("loggedInUser"))
         );
-
-        if (loggedInUser) {
-            axios
-                .get(`http://localhost:4545/users/${loggedInUser}/favorites`)
-                .then(function (response) {
-                    console.log("User favorites:" + response);
+        Promise.all([
+            fetchData(),
+            axios.get("http://localhost:4545/api/allshops"),
+            /* .then(function (response) {
+                    setArticles(response.data);
                 })
                 .catch(function (error) {
                     console.error(error);
-                });
-        }
+                }); */
+        ]).then((response) => {
+            setFavorites(response[0]);
+            setArticles(response[1].data);
+        });
     }, []);
 
-    useEffect(() => {
-        window.localStorage.setItem(
-            "loggedInUser",
-            JSON.stringify(loggedInUser)
-        );
-    }, [loggedInUser]);
-
+    console.log(favorites);
     return (
         <div className="App">
             <BrowserRouter>
                 <Routes>
                     <Route
                         path="/"
-                        element={<Home loggedInUser={loggedInUser} />}
+                        element={
+                            <Home
+                                loggedInUser={loggedInUser}
+                                favorites={favorites}
+                                articles={articles}
+                            />
+                        }
                     />
                     <Route
-                        path="/details/:shopName/:index"
+                        path="/details/:shopName/:id"
                         element={<Details />}
                     />
                     <Route
@@ -60,7 +72,13 @@ function App() {
                     <Route element={<Protect />}>
                         <Route
                             path="/dashboard"
-                            element={<Dashboard favorites={favorites} />}
+                            element={
+                                <Dashboard
+                                    loggedInUser={loggedInUser}
+                                    favorites={favorites}
+                                    articles={articles}
+                                />
+                            }
                         />
                     </Route>
                 </Routes>
