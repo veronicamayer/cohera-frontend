@@ -13,38 +13,23 @@ import Dashboard from "./pages/Dashboard/Dashboard";
 
 function App() {
     const [loggedInUser, setloggedInUser] = useState("");
-    const [favorites, setFavorites] = useState([]);
     const [articles, setArticles] = useState([]);
-
-    const fetchData = async () => {
-        try {
-            const response = await axios.get(`http://localhost:4545/favorites`);
-            return response.data;
-        } catch (error) {
-            console.error(error);
-        }
-    };
 
     useEffect(() => {
         setloggedInUser(
             JSON.parse(window.localStorage.getItem("loggedInUser"))
         );
-        Promise.all([
-            fetchData(),
-            axios.get("http://localhost:4545/api/allshops"),
-            /* .then(function (response) {
-                    setArticles(response.data);
-                })
-                .catch(function (error) {
-                    console.error(error);
-                }); */
-        ]).then((response) => {
-            setFavorites(response[0]);
-            setArticles(response[1].data);
-        });
+
+        axios
+            .get("http://localhost:4545/api/allshops")
+            .then(function (response) {
+                setArticles(response.data);
+            })
+            .catch(function (error) {
+                console.error(error);
+            });
     }, []);
 
-    console.log(favorites);
     return (
         <div className="App">
             <BrowserRouter>
@@ -54,7 +39,6 @@ function App() {
                         element={
                             <Home
                                 loggedInUser={loggedInUser}
-                                favorites={favorites}
                                 articles={articles}
                             />
                         }
@@ -74,8 +58,8 @@ function App() {
                             path="/dashboard"
                             element={
                                 <Dashboard
+                                    setloggedInUser={setloggedInUser}
                                     loggedInUser={loggedInUser}
-                                    favorites={favorites}
                                     articles={articles}
                                 />
                             }

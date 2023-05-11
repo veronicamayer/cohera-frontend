@@ -3,10 +3,26 @@ import "./Dashboard.scss";
 import Header from "../../components/Header/Header";
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import axios from "axios";
 
-function Dashboard({ loggedInUser, favorites, articles }) {
+function Dashboard({ setloggedInUser, loggedInUser, articles }) {
     const navigate = useNavigate();
-    const [favoriteArticles, setFavoriteArticles] = useState([]);
+    const [favorites, setFavorites] = useState([]);
+
+    useEffect(() => {
+        fetchFavorites();
+    }, []);
+
+    const fetchFavorites = async () => {
+        try {
+            const response = await axios.get(
+                `http://localhost:4545/favorites/${loggedInUser}`
+            );
+            setFavorites(response.data);
+        } catch (error) {
+            console.error(error);
+        }
+    };
 
     const logout = async () => {
         try {
@@ -16,6 +32,7 @@ function Dashboard({ loggedInUser, favorites, articles }) {
                 headers: { "content-type": "application/json" },
             });
             window.localStorage.clear();
+            setloggedInUser("");
             navigate("/");
             console.log(result);
         } catch (err) {
@@ -23,17 +40,9 @@ function Dashboard({ loggedInUser, favorites, articles }) {
         }
     };
 
-    useEffect(() => {
-        const filteredArticles = [...articles].filter((article) =>
-            favorites.includes(article.id)
-        );
-        setFavoriteArticles(filteredArticles);
-    }, [favorites, articles]);
-
     function handleHeartClick(article) {
-        console.log(loggedInUser + ": " + article);
-        fetch(`http://localhost:4545/users/${loggedInUser}`, {
-            method: "PUT",
+        fetch(`http://localhost:4545/favorites/${loggedInUser}`, {
+            method: "DELETE",
             headers: {
                 "Content-Type": "application/json",
             },
@@ -42,6 +51,7 @@ function Dashboard({ loggedInUser, favorites, articles }) {
             .then((response) => {
                 if (response.ok) {
                     console.log("Document updated successfully");
+                    fetchFavorites();
                 } else {
                     console.log(
                         "Error updating document:",
@@ -61,16 +71,20 @@ function Dashboard({ loggedInUser, favorites, articles }) {
                 <h1>Dashboard</h1>
                 <button onClick={logout}>Log out</button>
                 <div id="favorites">
-                    {favoriteArticles.length > 0 ? (
-                        favoriteArticles.map((article) => (
+                    {favorites.length > 0 ? (
+                        favorites.map((article) => (
                             <article key={article.id}>
                                 <i
                                     className={`fa-heart ${
-                                        favorites.includes(article.id)
+                                        favorites.some(
+                                            (favoriteArticle) =>
+                                                article.id ===
+                                                favoriteArticle.id
+                                        )
                                             ? "fa-solid"
                                             : "fa-regular"
                                     }`}
-                                    onClick={() => handleHeartClick(article.id)}
+                                    onClick={() => handleHeartClick(article)}
                                 ></i>
                                 <Link
                                     to={`/details/${article.shopName}/${article.id}`}
