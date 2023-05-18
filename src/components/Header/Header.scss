@@ -2,7 +2,7 @@ header {
     display: flex;
     align-items: baseline;
     justify-content: space-between;
-    padding: 3vh 3vw 5vh 3vw;
+    padding: 7vh 3vw 5vh 3vw;
     position: fixed;
     z-index: 2;
     background-color: white;
@@ -33,7 +33,7 @@ header {
         width: 10vw;
         object-fit: contain;
         position: absolute;
-        top: 2.5vh;
+        top: 7vh;
         left: 45vw;
     }
 

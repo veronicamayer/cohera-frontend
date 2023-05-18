@@ -9,13 +9,16 @@ import Banner from "../../assets/img/Banner.png";
 
 const Home = ({ loggedInUser, articles }) => {
     const [favorites, setFavorites] = useState([]);
-
-    console.log(favorites);
-    console.log(loggedInUser);
+    const [filteredArticles, setFilteredArticles] = useState([]);
+    const [selectedCategory, setSelectedCategory] = useState("");
 
     useEffect(() => {
         !loggedInUser ? setFavorites([]) : fetchFavorites();
     }, [loggedInUser]);
+
+    useEffect(() => {
+        filterArticlesByCategory();
+    }, [selectedCategory, articles]);
 
     const fetchFavorites = () => {
         fetch(`http://localhost:4545/favorites/${loggedInUser}`)
@@ -70,26 +73,73 @@ const Home = ({ loggedInUser, articles }) => {
             });
     }
 
+    const filterArticlesByCategory = () => {
+        if (selectedCategory === "") {
+            setFilteredArticles(articles);
+        } else {
+            const includeKeywords = selectedCategory
+                .toLowerCase()
+                .split(" ")
+                .filter((keyword) => !keyword.startsWith("-"));
+            const excludeKeywords = selectedCategory
+                .toLowerCase()
+                .split(" ")
+                .filter((keyword) => keyword.startsWith("-"))
+                .map((keyword) => keyword.slice(1));
+
+            const filtered = articles.filter((article) => {
+                const title = article.title.toLowerCase();
+                const includesInclusionKeywords = includeKeywords.some(
+                    (keyword) => title.includes(keyword)
+                );
+                const includesExclusionKeywords = excludeKeywords.some(
+                    (keyword) => title.includes(keyword)
+                );
+                return includesInclusionKeywords && !includesExclusionKeywords;
+            });
+
+            setFilteredArticles(filtered);
+        }
+    };
+
     return (
         <main>
             <BrandMenu />
             <Header />
             <section id="categories">
-                <a href="">T-Shirts</a>
-                <a href="">Pullover</a>
-                <a href="">Hosen</a>
-                <a href="">Shorts</a>
-                {/*                 <a href="">Waesche</a>
-                <a href="">Badekleidung</a>
- */}{" "}
-                <a href="">Schuhe</a>
-                <a href="">Accessoires</a>
+                <a onClick={() => setSelectedCategory("")}>Alles</a>
+                <a
+                    onClick={() =>
+                        setSelectedCategory(
+                            "t-shirt shirt top -longsleeve -sweatshirt"
+                        )
+                    }
+                >
+                    T-Shirts
+                </a>
+                <a
+                    onClick={() =>
+                        setSelectedCategory("pullover sweatshirt jumper")
+                    }
+                >
+                    Pullover
+                </a>
+                <a onClick={() => setSelectedCategory("Hose")}>Hosen</a>
+                <a onClick={() => setSelectedCategory("shorts")}>Shorts</a>
+                <a onClick={() => setSelectedCategory("Waesche")}>Waesche</a>
+                <a onClick={() => setSelectedCategory("Badekleidung")}>
+                    Badekleidung
+                </a>
+                <a onClick={() => setSelectedCategory("sneaker")}>Schuhe</a>
+                <a onClick={() => setSelectedCategory("Accessoires")}>
+                    Accessoires
+                </a>
             </section>
-            {/*             <img src={Banner} alt="" id="banner" />
-             */}{" "}
-            <li id="counter">{`all items (${articles.length})`}</li>
+            <img src={Banner} alt="" id="banner" />
+
+            <li id="counter">{`all items (${filteredArticles.length})`}</li>
             <section id="allArticles">
-                {articles.map((article, i) => (
+                {filteredArticles.map((article, i) => (
                     <article key={i}>
                         <i
                             className={`fa-heart ${

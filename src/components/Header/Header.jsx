@@ -5,8 +5,8 @@ import Logo from "../../assets/img/Logo.png";
 const Header = () => {
     return (
         <header>
-            {/*             <p>Being naked is the #1 most sustianable option. We're #2.</p>
-             */}{" "}
+            <p>Being naked is the #1 most sustianable option. We're #2.</p>
+
             <button
                 onClick={() => {
                     console.log("click");
